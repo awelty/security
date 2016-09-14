@@ -7,7 +7,7 @@ use Psr\Http\Message\RequestInterface;
 /**
  * signe des request en hmac
  */
-class HmacSignatureProvider implements SignRequestInterface
+class HmacSignatureProvider implements SignatureProviderInterface
 {
     /**
      * Header à mettre dans une request pour ne pas signer avec le contenu du body

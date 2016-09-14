@@ -5,7 +5,7 @@ namespace Awelty\Component\Security;
 use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\RequestInterface;
 
-interface SignRequestInterface
+interface SignatureProviderInterface
 {
     /**
      * Sign a request to authenticate
