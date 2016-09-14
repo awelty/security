@@ -10,7 +10,7 @@ use Psr\Http\Message\RequestInterface;
 final class MiddlewareProvider
 {
     /**
-     * @param AuthenticatorInterface $authenticator
+     * @param SignatureProviderInterface $signatureProvider
      * @return \Closure
      */
     public static function signRequestMiddleware(SignatureProviderInterface $signatureProvider)
