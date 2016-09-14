@@ -10,11 +10,6 @@ use Psr\Http\Message\RequestInterface;
 class HmacSignatureProvider implements SignatureProviderInterface
 {
     /**
-     * Header à mettre dans une request pour ne pas signer avec le contenu du body
-     */
-    const SIGNATURE_SKIP_BODY_HEADER = 'X-Signature-Skip-Body';
-
-    /**
      * @var string
      */
     private $publicKey;
@@ -48,16 +43,9 @@ class HmacSignatureProvider implements SignatureProviderInterface
      */
     public function sign(RequestInterface $request)
     {
-        if ($request->hasHeader(self::SIGNATURE_SKIP_BODY_HEADER)) {
-            $body = null;
-            $request = $request->withoutHeader(self::SIGNATURE_SKIP_BODY_HEADER);
-        } else {
-            $body = $request->getBody()->getContents();
-        }
-
         $datetime = new \DateTime();
 
-        $plainSignature = $request->getMethod().urldecode($request->getRequestTarget()).$datetime->format(\DateTime::ISO8601).$body;
+        $plainSignature = $request->getMethod().urldecode($request->getRequestTarget()).$datetime->format(\DateTime::ISO8601);
 
         return $request
             ->withHeader('X-Public-Key', $this->publicKey)
