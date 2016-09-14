@@ -13,11 +13,11 @@ final class MiddlewareProvider
      * @param AuthenticatorInterface $authenticator
      * @return \Closure
      */
-    public static function signRequestMiddleware(SignatureProviderInterface $signRequest)
+    public static function signRequestMiddleware(SignatureProviderInterface $signatureProvider)
     {
-        return function (callable $handler) use ($authenticator) {
-            return function (RequestInterface $request, array $options) use ($handler, $authenticator) {
-                $request = $signRequest->sign($request);
+        return function (callable $handler) use ($signatureProvider) {
+            return function (RequestInterface $request, array $options) use ($handler, $signatureProvider) {
+                $request = $signatureProvider->sign($request);
                 return $handler($request, $options);
             };
         };
