@@ -4,7 +4,10 @@ namespace Awelty\Component\Security;
 
 use Psr\Http\Message\RequestInterface;
 
-class HmacAuthenticator implements AuthenticatorInterface
+/**
+ * signe des request en hmac
+ */
+class HmacSignatureProvider implements SignRequestInterface
 {
     /**
      * Header à mettre dans une request pour ne pas signer avec le contenu du body
