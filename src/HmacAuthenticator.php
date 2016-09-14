@@ -51,14 +51,23 @@ class HmacAuthenticator extends AbstractGuardAuthenticator
 
     public function checkCredentials($credentials, UserInterface $user)
     {
+        // plus de 5 minutes, forbidden
+        if ($credentials['datetime']->diff(new \DateTime())->format('%i') >= 5) {
+            throw new AuthenticationException('Request is too old !');
+        }
+
         /** @var Request $request */
         $request = $credentials['request'];
 
-        $plainSignature = $request->getMethod().urldecode($request->getRequestTarget()).$credentials['datetime']->format(\DateTime::ISO8601);
+        $plainSignature = $request->getMethod().urldecode($request->getRequestUri()).$credentials['datetime']->format(\DateTime::ISO8601);
 
         $signature = hash_hmac($this->algo, $plainSignature, $user->getPassword());
 
-        return $signature === $credentials['signature'];
+        if ($signature !== $credentials['signature']) {
+            throw new AuthenticationException('Signatures doesn\'t match.');
+        }
+
+        return true;
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
