@@ -46,7 +46,7 @@ class HmacSignatureProvider implements SignatureProviderInterface
      * @param RequestInterface $request
      * @return RequestInterface
      */
-    public function signRequest(RequestInterface $request)
+    public function sign(RequestInterface $request)
     {
         if ($request->hasHeader(self::SIGNATURE_SKIP_BODY_HEADER)) {
             $body = null;
