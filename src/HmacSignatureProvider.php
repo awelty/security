@@ -43,13 +43,39 @@ class HmacSignatureProvider implements SignatureProviderInterface
      */
     public function sign(RequestInterface $request)
     {
-        $datetime = new \DateTime();
+        foreach ($this->getHeaders($request->getMethod(), $request->getRequestTarget()) as $k => $v) {
+            $request = $request->withHeader($k, $v);
+        }
 
-        $plainSignature = $request->getMethod().urldecode($request->getRequestTarget()).$datetime->format(\DateTime::ISO8601);
+        return $request;
+    }
 
-        return $request
-            ->withHeader('X-Public-Key', $this->publicKey)
-            ->withHeader('X-Datetime', $datetime->format(\DateTime::ISO8601))
-            ->withHeader('X-Signature', hash_hmac($this->algo, $plainSignature, $this->privateKey));
+    /**
+     * Les headers pour $_SERVER (préfixé par HTTP_)
+     */
+    public function getServerHeaders($method, $requestTarget)
+    {
+        $headers = [];
+
+        foreach ($this->getHeaders($method, $requestTarget) as $k => $v) {
+            $headers['HTTP_'.$k] = $v;
+        }
+
+        return $headers;
+    }
+
+    /**
+     * Pour signer autre chose qu'une requestInterface..
+     */
+    public function getHeaders($method, $requestTarget)
+    {
+        $now = new \DateTime();
+        $plainSignature = $method.urldecode($requestTarget).$now->format(\DateTime::ISO8601);
+
+        return [
+            'X-Public-Key' => $this->publicKey,
+            'X-Datetime' => $now->format(\DateTime::ISO8601),
+            'X-Signature' => hash_hmac($this->algo, $plainSignature, $this->privateKey),
+        ];
     }
 }
