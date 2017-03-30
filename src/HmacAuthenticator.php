@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
@@ -46,7 +47,12 @@ class HmacAuthenticator extends AbstractGuardAuthenticator
 
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
-        return $userProvider->loadUserByUsername($credentials['publicKey']);
+        // try catch juste pour un message d'erreur plus pertinent..
+        try {
+            return $userProvider->loadUserByUsername($credentials['publicKey']);
+        } catch (UsernameNotFoundException $e) {
+            throw new AuthenticationException(sprintf('Invalid API key %s.', $credentials['publicKey']));
+        }
     }
 
     public function checkCredentials($credentials, UserInterface $user)
